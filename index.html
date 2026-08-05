@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> الإنجازات اليومية</title>
+    <title>منصة الإنجاز اليومية</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -283,7 +283,23 @@
             animation: toastFabulous 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        /* أنيميشن موشن هادئ ومتناسق مع ألوان الموقع */
+        /* أنيميشن انتقال هادئ، بطيء، وناعماً جداً عند التبديل */
+        @keyframes authSlowFadeSmooth {
+            0% {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-card-anim {
+            animation: authSlowFadeSmooth 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
         @keyframes softHarmonicMotion {
             0% {
                 background-position: 0% 50%;
@@ -417,6 +433,53 @@
 
 <body class="flex flex-col justify-between items-center p-3 sm:p-8 relative min-h-screen">
 
+    <!-- شاشة تسجيل الدخول / إنشاء حساب -->
+    <div id="authScreen"
+        class="fixed inset-0 bg-transparent z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/30">
+        <div id="authCardContainer"
+            class="winter-card auth-card-anim w-full max-w-sm p-7 rounded-3xl text-center shadow-2xl relative">
+            <!-- زر الدارك مود داخل شاشة التسجيل -->
+            <div class="absolute top-4 left-4">
+                <button onclick="toggleDarkMode()"
+                    class="winter-card w-9 h-9 rounded-xl text-xs font-bold flex items-center justify-center shadow-sm hover:scale-105 transition-all text-[#4B1426] dark:text-[#EFEABB]">
+                    <i id="authDarkModeIcon" class="fa-solid fa-moon text-[#558467]"></i>
+                </button>
+            </div>
+
+            <div
+                class="w-16 h-16 bg-[#4B1426] text-[#EFEABB] dark:bg-[#17433F] rounded-2xl mx-auto flex items-center justify-center text-2xl mb-3 shadow-md mt-2">
+                <i class="fa-solid fa-user-lock"></i>
+            </div>
+            <h2 id="authTitle" class="text-xl font-bold text-[#4B1426] dark:text-[#EFEABB] mb-1">تسجيل الدخول إلى منجز
+            </h2>
+            <p id="authSubtitle" class="text-xs text-[#558467] mb-5">أدخل اسم المستخدم وكلمة المرور للوصول لمهامك</p>
+
+            <form id="authForm" class="space-y-3.5 text-right">
+                <div>
+                    <label class="block text-[11px] font-bold mb-1 text-[#558467]">اسم المستخدم</label>
+                    <input type="text" id="authUsername" required placeholder="اكتب اسم المستخدم..."
+                        class="winter-input w-full rounded-2xl px-4 py-3 text-xs">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold mb-1 text-[#558467]">كلمة المرور</label>
+                    <input type="password" id="authPassword" required placeholder="••••••••"
+                        class="winter-input w-full rounded-2xl px-4 py-3 text-xs">
+                </div>
+                <div id="authErrorMsg" class="text-red-500 text-xs text-center hidden font-bold"></div>
+                <button type="submit" id="authSubmitBtn"
+                    class="w-full bg-[#558467] hover:bg-[#436a51] text-white font-bold py-3.5 rounded-2xl shadow-md transition-all text-xs mt-2">
+                    تسجيل الدخول
+                </button>
+            </form>
+
+            <div class="mt-4 pt-3 border-t border-[#558467]/20 text-xs">
+                <span id="authToggleText" class="text-[#558467]">ليس لديك حساب؟</span>
+                <button type="button" onclick="toggleAuthMode()"
+                    class="font-bold text-[#4B1426] dark:text-[#EFEABB] mr-1 underline">إنشاء حساب جديد</button>
+            </div>
+        </div>
+    </div>
+
     <!-- رسالة التهنئة -->
     <div id="achievementToast" class="fixed top-4 sm:top-6 z-50 hidden px-4 w-full max-w-sm">
         <div
@@ -467,7 +530,11 @@
             <!-- Header & Quranic Verse -->
             <header class="w-full flex flex-col gap-3 mb-4">
 
-                <div class="flex justify-end">
+                <div class="flex justify-between items-center">
+                    <button onclick="logoutUser()"
+                        class="winter-card px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-sm hover:text-red-500 transition-all text-[#4B1426] dark:text-[#EFEABB]">
+                        <i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج
+                    </button>
                     <button onclick="toggleDarkMode()"
                         class="winter-card px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 shadow-sm hover:scale-105 transition-all text-[#4B1426] dark:text-[#EFEABB]">
                         <i id="darkModeIcon" class="fa-solid fa-moon text-[#558467]"></i>
@@ -507,8 +574,7 @@
                         </button>
                         <button onclick="switchTab('archive')" id="tabArchiveBtn"
                             class="px-2.5 py-1 rounded-lg text-[11px] font-bold text-[#4B1426] dark:text-[#EFEABB] hover:bg-[#558467]/20 transition-all">
-
-                            المُنجز
+                            الأرشيف
                         </button>
                     </nav>
                 </div>
@@ -554,7 +620,7 @@
                         </div>
 
                         <div id="tasksContainer" class="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
-                            <div class="text-center text-[#558467] py-10 text-xs">جاري جلب المهام...</div>
+                            <div class="text-center text-[#558467] py-10 text-xs">جاري جلب مهامك...</div>
                         </div>
                     </div>
                 </section>
@@ -577,7 +643,7 @@
                             <button type="submit"
                                 class="w-full bg-[#558467] hover:bg-[#436a51] text-white font-bold py-3.5 rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 text-xs">
                                 <i class="fa-solid fa-circle-plus text-xs"></i>
-                                <span>حفظ المهمة في القائمة</span>
+                                <span>حفظ المهمة في قائمتي</span>
                             </button>
                         </form>
                     </div>
@@ -592,14 +658,13 @@
                                 <i class="fa-solid fa-box-archive"></i>
                             </div>
                             <div>
-                                <h2 class="text-sm font-bold text-[#4B1426] dark:text-white">أرشيف المهام المنجزة</h2>
-                                <p class="text-[10px] text-[#558467]">سجل إنجازاتك السابقة بالكامل</p>
+                                <h2 class="text-sm font-bold text-[#4B1426] dark:text-white">أرشيف إنجازاتك</h2>
+                                <p class="text-[10px] text-[#558467]">سجل مهامك المنجزة بالكامل</p>
                             </div>
                         </div>
 
                         <div id="archiveContainerList" class="space-y-2.5 max-h-[350px] overflow-y-auto pr-1">
-                            <div class="text-center text-[#558467] py-10 text-xs">لا توجد مهام منجزة في الأرشيف حتى
-                                الآن.</div>
+                            <div class="text-center text-[#558467] py-10 text-xs">الأرشيف فارغ حالياً.</div>
                         </div>
                     </div>
                 </section>
@@ -662,14 +727,17 @@
         </div>
     </div>
 
-    <!-- Footer with Soft Animated Name, Phone & Social Links -->
+    <!-- Footer -->
     <footer
         class="text-[#558467] text-[11px] mt-6 tracking-wider font-bold z-10 text-center w-full flex flex-col items-center gap-2">
         <span>تصميم واجهات المستخدم الاحترافية &copy; 2026</span>
-        <!-- اسمك مع موشن هادي ومتناسق -->
         <span class="text-sm tracking-widest font-black animated-name py-1">ENG/ Aboelftoh Ahmed</span>
 
-        <!-- أيقونات التواصل الاجتماعي (الفيسبوك مربوط برابطك الشخصي) -->
+        <a href="tel:01024730375"
+            class="text-xs font-bold text-[#4B1426] dark:text-[#EFEABB] opacity-90 hover:underline" title="اتصل بي">
+            <i class="fa-solid fa-phone ml-1.5"></i> 01024730375
+        </a>
+
         <div class="flex items-center gap-3 mt-1">
             <a href="https://wa.me/201024730375" target="_blank"
                 class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center text-sm shadow-md hover:scale-110 transition-transform"
@@ -687,31 +755,8 @@
     <!-- Firebase SDKs & App Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-        window.toggleDarkMode = function () {
-            const htmlEl = document.documentElement;
-            const icon = document.getElementById('darkModeIcon');
-            const text = document.getElementById('darkModeText');
-
-            if (htmlEl.classList.contains('dark')) {
-                htmlEl.classList.remove('dark');
-                localStorage.setItem('theme', 'light');
-                icon.className = "fa-solid fa-moon text-[#558467]";
-                text.innerText = "الوضع الداكن";
-            } else {
-                htmlEl.classList.add('dark');
-                localStorage.setItem('theme', 'dark');
-                icon.className = "fa-solid fa-sun text-yellow-400";
-                text.innerText = "الوضع الفاتح";
-            }
-        }
-
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            document.getElementById('darkModeIcon').className = "fa-solid fa-sun text-yellow-400";
-            document.getElementById('darkModeText').innerText = "الوضع الفاتح";
-        }
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, deleteDoc, doc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBkEcxWs4uOgBoI-uR9Sdr5R8NJ1Ig6GQ0",
@@ -723,7 +768,109 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
+
+        let currentUser = null;
+        let isSignUpMode = false;
+
+        window.toggleDarkMode = function () {
+            const htmlEl = document.documentElement;
+            const icon = document.getElementById('darkModeIcon');
+            const authIcon = document.getElementById('authDarkModeIcon');
+            const text = document.getElementById('darkModeText');
+
+            if (htmlEl.classList.contains('dark')) {
+                htmlEl.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                if (icon) icon.className = "fa-solid fa-moon text-[#558467]";
+                if (authIcon) authIcon.className = "fa-solid fa-moon text-[#558467]";
+                if (text) text.innerText = "الوضع الداكن";
+            } else {
+                htmlEl.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                if (icon) icon.className = "fa-solid fa-sun text-yellow-400";
+                if (authIcon) authIcon.className = "fa-solid fa-sun text-yellow-400";
+                if (text) text.innerText = "الوضع الفاتح";
+            }
+        }
+
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            const icon = document.getElementById('darkModeIcon');
+            const authIcon = document.getElementById('authDarkModeIcon');
+            const text = document.getElementById('darkModeText');
+            if (icon) icon.className = "fa-solid fa-sun text-yellow-400";
+            if (authIcon) authIcon.className = "fa-solid fa-sun text-yellow-400";
+            if (text) text.innerText = "الوضع الفاتح";
+        }
+
+        window.toggleAuthMode = function () {
+            isSignUpMode = !isSignUpMode;
+            const cardContainer = document.getElementById('authCardContainer');
+
+            // أنيميشن هادئ جداً وبطيء ومريح للعين
+            cardContainer.classList.remove('auth-card-anim');
+            void cardContainer.offsetWidth;
+            cardContainer.classList.add('auth-card-anim');
+
+            const title = document.getElementById('authTitle');
+            const subtitle = document.getElementById('authSubtitle');
+            const btn = document.getElementById('authSubmitBtn');
+            const toggleText = document.getElementById('authToggleText');
+            const errorMsg = document.getElementById('authErrorMsg');
+            errorMsg.classList.add('hidden');
+
+            if (isSignUpMode) {
+                title.innerText = "إنشاء حساب جديد";
+                subtitle.innerText = "اكتب اسم المستخدم وكلمة المرور لحسابك";
+                btn.innerText = "إتمام التسجيل";
+                toggleText.innerText = "لديك حساب بالفعل؟";
+            } else {
+                title.innerText = "تسجيل الدخول إلى منجز";
+                subtitle.innerText = "أدخل اسم المستخدم وكلمة المرور للوصول لمهامك";
+                btn.innerText = "تسجيل الدخول";
+                toggleText.innerText = "ليس لديك حساب؟";
+            }
+        }
+
+        const authForm = document.getElementById('authForm');
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usernameInput = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            const errorMsg = document.getElementById('authErrorMsg');
+            errorMsg.classList.add('hidden');
+
+            const fakeEmail = `${usernameInput.toLowerCase().replace(/\s+/g, '')}@mongez.app`;
+
+            try {
+                if (isSignUpMode) {
+                    await createUserWithEmailAndPassword(auth, fakeEmail, password);
+                } else {
+                    await signInWithEmailAndPassword(auth, fakeEmail, password);
+                }
+            } catch (error) {
+                errorMsg.innerText = "تأكد من صحة اسم المستخدم وكلمة المرور (6 أحرف على الأقل).";
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        window.logoutUser = async function () {
+            await signOut(auth);
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            const authScreen = document.getElementById('authScreen');
+            if (user) {
+                currentUser = user;
+                authScreen.classList.add('hidden');
+                fetchAllTasks();
+            } else {
+                currentUser = null;
+                authScreen.classList.remove('hidden');
+            }
+        });
 
         const tasksContainer = document.getElementById('tasksContainer');
         const archiveContainerList = document.getElementById('archiveContainerList');
@@ -772,8 +919,10 @@
         }
 
         async function fetchAllTasks() {
+            if (!currentUser) return;
             try {
-                const snapshot = await getDocs(collection(db, "tasks"));
+                const q = query(collection(db, "tasks"), where("userId", "==", currentUser.uid));
+                const snapshot = await getDocs(q);
                 let tasksHTML = '';
                 let archiveHTML = '';
                 let activeCount = 0;
@@ -822,8 +971,8 @@
                     }
                 });
 
-                tasksContainer.innerHTML = tasksHTML || '<div class="text-center text-[#558467] py-10 text-xs">مفيش مهام حالياً. ادخل على صفحة "إضافة" واكتب اللي وراك!</div>';
-                archiveContainerList.innerHTML = archiveHTML || '<div class="text-center text-[#558467] py-10 text-xs">الأرشيف فاضي. اخلص من المهام عشان تنور هنا!</div>';
+                tasksContainer.innerHTML = tasksHTML || '<div class="text-center text-[#558467] py-10 text-xs">مفيش مهام حالياً. ابدأ بإضافة مهمتك الأولى!</div>';
+                archiveContainerList.innerHTML = archiveHTML || '<div class="text-center text-[#558467] py-10 text-xs">الأرشيف فاضي. اخلص مهامك عشان تظهر هنا!</div>';
 
                 activeCountStat.innerText = activeCount;
                 doneCountStat.innerText = doneCount;
@@ -835,6 +984,7 @@
 
         createTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            if (!currentUser) return;
             const textVal = taskInputDesc.value.trim();
             if (!textVal) return;
 
@@ -842,6 +992,7 @@
                 await addDoc(collection(db, "tasks"), {
                     text: textVal,
                     completed: false,
+                    userId: currentUser.uid,
                     createdAt: serverTimestamp()
                 });
                 taskInputDesc.value = '';
@@ -934,8 +1085,6 @@
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
-
-        fetchAllTasks();
     </script>
 </body>
 
